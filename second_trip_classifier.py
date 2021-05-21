@@ -21,7 +21,6 @@ epoch_size = 1024*5             #training samples per epoch
 n_epochs = 100                  #number of training epochs
 lr_epochs = 20                  #number of additional epochs at reduced learning rate
 batch_size = 16                 #mini-batch size
-fields = ['ref','vel','wid']    #final training loss of 0.072 with 4-inputs
 class_weight = 0.75             #if classes are skewed this sets the weight of the 1's class in the BCE loss function
 
 #unet++ size:
@@ -118,7 +117,7 @@ def batch_generator(data,masks,inputs,targets):
 
 def weighted_binary_crossentropy(y_true,y_pred):
     bce = K.binary_crossentropy(y_true,y_pred)
-    wbce = 0.75*y_true*bce + 0.25*(1-y_true)*bce
+    wbce = class_weight*y_true*bce + (1-class_weight)*(1-y_true)*bce
     return tf.reduce_mean(wbce)
     
 #defines the convolutions done in the unet
